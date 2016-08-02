@@ -1,0 +1,5 @@
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
+set(CMAKE_BUILD_TYPE Debug)
+set(LIBRARY_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/lib")
+aux_source_directory(. SRC_DIR)
+add_library(zdq_utils ${SRC_DIR})
