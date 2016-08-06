@@ -10,6 +10,7 @@
 - ===========
 - 封装IPV4套接字地址(un_test)
 - 封装socket常用函数(un_test)
+- 创建I/O缓冲buffer类
 
 
 ### 参考资料
