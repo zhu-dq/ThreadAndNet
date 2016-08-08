@@ -51,3 +51,7 @@ void Thread::join()
     pthread_join(pid_,NULL);
 }
 
+pid_t Thread::getThreadId()
+{
+    return static_cast<pid_t>(::syscall(SYS_gettid));
+}

@@ -11,6 +11,8 @@
 #include <functional>  //function + bind 统一化线程函数
 #include <pthread.h>
 #include <assert.h>
+#include <sys/syscall.h>//SYS_gettid
+#include <unistd.h>//::syscall
 namespace ZDQ{
     class Thread:public NonCopyable
     {
@@ -27,6 +29,8 @@ namespace ZDQ{
             void start();
 
             void join();
+
+            static pid_t getThreadId();
 
         private:
 
