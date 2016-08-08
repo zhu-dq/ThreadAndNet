@@ -11,8 +11,10 @@
 - 封装IPV4套接字地址(un_test)
 - 封装socket常用函数(un_test)
 - 创建I/O缓冲buffer类
-- 创建时间戳类
-
+- 创建时间戳类Timestamp
+- 创建事件循环类EventLoop
+- 创建事件分发类Channel
+- 封装I/O多路复用类Poller
 
 ### 参考资料
 - 《UNIX网络编程》

@@ -11,5 +11,11 @@ target_link_libraries(test_thread_pool zdq_utils)
 add_executable(test_buffer test_buffer.cpp)
 target_link_libraries(test_buffer zdq_utils)
 
+add_executable(test_event_loop test_event_loop.cpp)
+target_link_libraries(test_event_loop zdq_utils)
+
 add_executable(test_time_stamp test_time_stamp.cpp)
 target_link_libraries(test_time_stamp zdq_utils)
+
+add_executable(test_eventloop_poller_channel test_eventloop_poller_channel.cpp)
+target_link_libraries(test_eventloop_poller_channel zdq_utils)
