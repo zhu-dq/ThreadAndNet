@@ -15,6 +15,7 @@
 - 创建事件循环类EventLoop
 - 创建事件分发类Channel
 - 封装I/O多路复用类Poller
+- 其他正在coding中...
 
 ### 参考资料
 - 《UNIX网络编程》
