@@ -19,3 +19,6 @@ target_link_libraries(test_time_stamp zdq_utils)
 
 add_executable(test_eventloop_poller_channel test_eventloop_poller_channel.cpp)
 target_link_libraries(test_eventloop_poller_channel zdq_utils)
+
+add_executable(test_timer test_timer.cpp)
+target_link_libraries(test_timer zdq_utils)
