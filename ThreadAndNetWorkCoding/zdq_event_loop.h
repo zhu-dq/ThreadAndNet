@@ -9,29 +9,54 @@
 
 #include "zdq_noncopyable.h"
 #include "zdq_thread.h"
+#include "zdq_mutex.h"
+#include "zdq_channel.h"
+#include "zdq_timer_info.h"
 //#include <sys/poll.h>//::poll
 #include <memory>
 #include <vector>
+#include <functional>
 
 namespace ZDQ{
     class Channel;
     class Poller;
+    class TimeQueue;
     class EventLoop : public ZDQ::NonCopyable
     {
         public:
             typedef std::vector<Channel*> ChannelList;
+            typedef std::function<void () > Functor;
             EventLoop();
             ~EventLoop();
             void loop();//核心
             void updateChannel(Channel * c);//un_complite
             bool isInLoopThread();
             void quit();
+            //update 1
+            void runInLoop(const Functor& cb);
+            void appendFuncInLoop(const Functor& cb);
+            void doAppendFunctors();
+            //update 2
+            void runAt(const Timestamp & time , const Functor& cb);
+            void runAfter(double delay, const Functor& cb);
+            void runEvery(double interval, const Functor& cb);
         private:
             bool looping_;
             const pid_t threadId_;//判断是否当前线程
             std::unique_ptr<Poller> poller_;//updateChannel
             ChannelList activeChannels_;
             bool quit_;
+            //update for runInLoop
+            MutexLock mutex_;
+            std::vector<Functor> appendFunctors_;//因为暴露给了其他线程 所以要加锁
+            bool  callingPendingFunctors_;
+
+            //用于在有新的定时函数要加进来时，唤醒loop
+            int wakeupFd_;
+            Channel wakeupChannel_;
+
+             std::unique_ptr<TimeQueue> timeQueue_;
+
     };
 }
 
