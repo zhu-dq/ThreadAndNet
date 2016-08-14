@@ -75,6 +75,60 @@ void ZDQ::Timer::cannelTimer()
     is_started_ = false;
 }
 
+int ZDQ::creatTimerFd()
+{
+    int timer_fd = ::timerfd_create(CLOCK_REALTIME,0);
+    if(timer_fd == -1)
+        ERR_EXIT("Timer::creatTimerFd");
+    return timer_fd;
+}
+
+void ZDQ::weakFd(int fd)
+{
+    uint64_t one = 1;
+    ssize_t n = ::write(fd, &one, sizeof one);
+    if (n != sizeof one) {
+        std::cout << "EventLoop::wakeup() writes " << n << " bytes instead of 8"<<std::endl;
+    }
+}
+
+void ZDQ::handleRead(int fd)
+{
+    uint64_t one = 1;
+    ssize_t n = read(fd, &one, sizeof one);
+    if (n != sizeof one)
+    {
+        std::cout << "EventLoop::handleRead() reads " << n << " bytes instead of 8"<<std::endl;
+    }
+}
+
+struct timespec ZDQ::howMuchTimeFromNow(Timestamp when)
+{
+    int64_t microseconds = when.getMicroSeconds()
+                           - Timestamp::now().getMicroSeconds();
+    if (microseconds < 100)
+    {
+        microseconds = 100;
+    }
+    struct timespec ts;
+    ts.tv_sec = static_cast<time_t>(
+            microseconds / Timestamp::kMicroSecondsPerSecond);
+    ts.tv_nsec = static_cast<long>(
+            (microseconds % Timestamp::kMicroSecondsPerSecond) * 1000);
+    return ts;
+}
+
+void ZDQ::resetTimerfd(int timerfd, Timestamp expiration)
+{
+    struct itimerspec newValue;
+    struct itimerspec oldValue;
+    bzero(&newValue, sizeof newValue);
+    bzero(&oldValue, sizeof oldValue);
+    newValue.it_value = howMuchTimeFromNow(expiration);
+    int ret = ::timerfd_settime(timerfd, 0, &newValue, &oldValue);
+    if (ret)
+        std::cout<< "timerfd_settime()"<<std::endl;
+}
 /*
  *==============NODE1=====================
  * int timerfd_create(int clockid, int flags);

@@ -1,9 +1,6 @@
 /*
  * 定时器类
  * 核心:封装timerfd
- *	#include <sys/timerfd.h>
- *	timerfd_create
- *	timerfd_settime
  * 作者:zhu-dq
  */
 #ifndef ZDQ_TIMER_H
@@ -13,6 +10,16 @@
 #include "zdq_noncopyable.h"
 #include <functional>
 #include <sys/timerfd.h>
+#include <unistd.h>
+#include <string.h>
+#include <iostream>
+
+#define ERR_EXIT(m) \
+    do { \
+        perror(m);\
+        exit(EXIT_FAILURE);\
+    }while(0)
+
 namespace ZDQ{
     class Timer: public ZDQ::NonCopyable{
     public:
@@ -20,10 +27,11 @@ namespace ZDQ{
         Timer();
         ~Timer();
 
-        void setTimer(int,int);//(初始时间（延时开始时间），间隔时间) //秒
+        void setTimer(int,int);//(初始时间，间隔时间) //秒
         void setTimerCallback(const TimerCallback & cb);//timerfd可读时的响应事件
         void runTimer();
         void cannelTimer();
+        int getTimerId()const{ return timerfd_;}
     private:
         int timerfd_;
         TimerCallback timerCallback_;
@@ -32,10 +40,15 @@ namespace ZDQ{
 
     };
 
+    int creatTimerFd();
+    void weakFd(int fd);
+    void handleRead(int fd);
+    struct timespec howMuchTimeFromNow(Timestamp when);
+    void resetTimerfd(int timerfd, Timestamp expiration);
 }
 
 
-#endif //THREADANDNET_ZDQ_TIMER_H
+#endif //ZDQ_TIMER_H
 /*
  *===================NODE1===================
  */
