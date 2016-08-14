@@ -17,6 +17,7 @@
 - 封装I/O多路复用类Poller
 - 封装定时器类Timer
 - 封装原子操作类AtomicIntegerT
+- 增加定时函数管理类TimerQueue
 - 其他正在coding中...
 
 ### 参考资料
