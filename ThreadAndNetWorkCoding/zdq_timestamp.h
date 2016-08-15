@@ -20,14 +20,21 @@ namespace ZDQ{
         std::string  toString();
 
         static Timestamp now();
-        static Timestamp nowAfter(double seconds);
+        Timestamp nowAfter(double seconds);
         static double nowMicroSeconds();//核心
         static const int kMicroSecondsPerSecond = 1000*1000;
     private:
         int64_t microSeconds_;//微妙
     };
-    bool operator <(Timestamp l, Timestamp r);
-    bool operator ==(Timestamp l, Timestamp r);
+    inline bool operator<(Timestamp lhs, Timestamp rhs)
+    {
+        return lhs.getMicroSeconds() < rhs.getMicroSeconds();
+    }
+
+    inline bool operator==(Timestamp lhs, Timestamp rhs)
+    {
+        return lhs.getMicroSeconds() == rhs.getMicroSeconds();
+    }
 }
 #endif
 /*

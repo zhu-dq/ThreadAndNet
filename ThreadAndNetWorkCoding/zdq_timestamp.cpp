@@ -40,7 +40,8 @@ ZDQ::Timestamp ZDQ::Timestamp::now()
 
 ZDQ::Timestamp ZDQ::Timestamp::nowAfter(double seconds)
 {
-    return Timestamp(nowMicroSeconds()+seconds*kMicroSecondsPerSecond);
+    int64_t delta = static_cast<int64_t>(seconds * kMicroSecondsPerSecond);
+    return Timestamp(this->getMicroSeconds()+delta);
 }
 
 std::string ZDQ::Timestamp::toString()
@@ -50,16 +51,6 @@ std::string ZDQ::Timestamp::toString()
     int micro_second = microSeconds_%kMicroSecondsPerSecond;
     snprintf(buf,sizeof(buf)-1,"%" PRId64 ".%06" PRId64 "",second,micro_second);
     return buf;
-}
-
-bool ZDQ::operator<(Timestamp l, Timestamp r)
-{
-    l.getMicroSeconds() < r.getMicroSeconds();
-}
-
-bool ZDQ::operator==(Timestamp l, Timestamp r)
-{
-    return l.getMicroSeconds() == r.getMicroSeconds();
 }
 
 /*
