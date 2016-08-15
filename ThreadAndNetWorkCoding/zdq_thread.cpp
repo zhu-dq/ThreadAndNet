@@ -55,3 +55,8 @@ pid_t Thread::getThreadId()
 {
     return static_cast<pid_t>(::syscall(SYS_gettid));
 }
+
+bool ZDQ::Thread::IsStarted()
+{
+    return is_start_;
+}

@@ -30,6 +30,8 @@ namespace ZDQ{
 
             void join();
 
+            bool IsStarted();
+
             static pid_t getThreadId();
 
         private:
