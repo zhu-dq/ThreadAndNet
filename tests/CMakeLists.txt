@@ -28,3 +28,6 @@ target_link_libraries(test_atomic zdq_utils)
 
 add_executable(test_timer_queue test_timer_queue.cpp)
 target_link_libraries(test_timer_queue zdq_utils)
+
+add_executable(test_eventloop_thread test_eventloop_thread.cpp)
+target_link_libraries(test_eventloop_thread zdq_utils)
