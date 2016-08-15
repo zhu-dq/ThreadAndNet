@@ -7,6 +7,7 @@
 #include <sys/poll.h>
 #include <iostream>
 #include <unistd.h>//read
+#include <sys/eventfd.h>
 #define ERR_EXIT(m) \
     do { \
         perror(m);\
@@ -77,10 +78,16 @@ void ZDQ::Timer::cannelTimer()
 
 int ZDQ::creatTimerFd()
 {
+    /*
     int timer_fd = ::timerfd_create(CLOCK_REALTIME,0);
     if(timer_fd == -1)
         ERR_EXIT("Timer::creatTimerFd");
     return timer_fd;
+     */
+    int evtfd = ::eventfd(0,EFD_NONBLOCK | EFD_CLOEXEC);
+    if(evtfd < 0)
+        ERR_EXIT("Timer::creadTimerFd");
+    return evtfd;
 }
 
 void ZDQ::weakFd(int fd)
@@ -95,7 +102,7 @@ void ZDQ::weakFd(int fd)
 void ZDQ::handleRead(int fd)
 {
     uint64_t one = 1;
-    ssize_t n = read(fd, &one, sizeof one);
+    ssize_t n = ::read(fd, &one, sizeof one);
     if (n != sizeof one)
     {
         std::cout << "EventLoop::handleRead() reads " << n << " bytes instead of 8"<<std::endl;
