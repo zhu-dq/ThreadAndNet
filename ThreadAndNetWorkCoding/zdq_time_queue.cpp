@@ -64,7 +64,11 @@ void ZDQ::TimeQueue::reset(std::vector<Entry> &expired, Timestamp now)
         if(elem.second->IsRepeat())
         {
             elem.second->restart(now);
+            elem.first = elem.second->getExpiration();
+            auto iter = timers_.begin();
             timers_.insert(elem);
+            if(iter == timers_.end() ||  elem.first < iter->first)
+                ZDQ::resetTimerfd(timerfd_,elem.second->getExpiration());
         }
         else
         {
