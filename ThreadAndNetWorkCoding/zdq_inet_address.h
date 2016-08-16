@@ -30,7 +30,7 @@ namespace ZDQ{
 
     public:
 
-        explicit InetAddress(uint16_t port)
+        explicit InetAddress(int port)
         {
             /*
              * sock_addr_结构详见UNP1:P56
@@ -38,10 +38,21 @@ namespace ZDQ{
             ::memset(&sock_addr_,0, sizeof(sock_addr_));
             sock_addr_.sin_family = AF_INET;//AF_INET:IPV4协议 其他family常量详见UNP1:P78
             sock_addr_.sin_addr.s_addr = INADDR_ANY;//IPV4地址，INADDR_ANY见下面NODE3
-            sock_addr_.sin_port =
-                    port;//端口号
+            /*
+            if(inet_pton(AF_INET,"127.0.0.1",&sock_addr_.sin_addr)<=0)
+                ERR_EXIT("inet_pton error");*/
+            //sock_addr_.sin_port = port;//端口号
+            sock_addr_.sin_port = htons(port);//端口号
         }
+        InetAddress(std::string ip , int port)
+        {
+            ::memset(&sock_addr_,0, sizeof(sock_addr_));
+            sock_addr_.sin_family = AF_INET;//AF_INET:IPV4协议
+            if(inet_pton(AF_INET,ip.c_str(),&sock_addr_.sin_addr)<=0)//ip
+                ERR_EXIT("inet_pton error");
+            sock_addr_.sin_port = htons(port);//port
 
+        }
         InetAddress(const struct sockaddr_in & addr):sock_addr_(addr){}
 
         void setSockAddrInet(const struct sockaddr_in & addr)
