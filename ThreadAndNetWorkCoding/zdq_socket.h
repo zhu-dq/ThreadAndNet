@@ -10,11 +10,16 @@
 #include "zdq_noncopyable.h"
 #include <unistd.h>  //close
 #include <netinet/tcp.h>  //TCP_NODELAY
+#include <iostream>
+#include <fcntl.h>
 
 namespace  ZDQ{
 
     class Socket : public ZDQ::NonCopyable{
     public:
+        Socket(const InetAddress & addr):socket_fd_(Socket::creatSockFd(addr))
+        {
+        }
         explicit Socket(int sockfd):socket_fd_(sockfd){}
 
         ~Socket()
@@ -30,7 +35,7 @@ namespace  ZDQ{
 
         void Bind(const InetAddress & addr)
         {
-            if(::bind(socket_fd_,(SA*)addr.getSockAddrInet(),sizeof(SA))==-1)
+            if(::bind(socket_fd_,(SA*)addr.getSockAddrInet(),sizeof(struct sockaddr_in))==-1)
                 ERR_EXIT("bind");
         }
         void Listen()
@@ -39,11 +44,27 @@ namespace  ZDQ{
                 ERR_EXIT("listen");
         }
 
-        int Accept()
+        int Accept(InetAddress * peeraddr)
         {
             int peerfd;
-            if(peerfd=::accept(socket_fd_,NULL,NULL) == -1)
-                ERR_EXIT("accept");
+            struct sockaddr_in addr;
+            socklen_t len = sizeof(addr);
+            /*
+            if(peerfd=::accept(socket_fd_,(SA *)&addr,&len) == -1)//这样写有问题，会出现服务器第一次启动，第一次客户端连接时获取不到服务器返回的信息
+                ERR_EXIT("accept");*/
+
+            peerfd=::accept(socket_fd_,(SA *)&addr,&len);
+            if(peerfd>0)
+            {
+                peeraddr->setSockAddrInet(addr);
+            } else{
+                std::cout<<"connectfd error"<<std::endl;
+                ::close(peerfd);
+            }
+
+            //fcntl(peerfd, F_SETFL, O_NONBLOCK); //非阻塞 io
+            //perror("sccept : ");
+
             return  peerfd;
         }
 
@@ -53,6 +74,34 @@ namespace  ZDQ{
                 ERR_EXIT("shutdow");
         }
 
+        void Connect(InetAddress addr)
+        {
+            /*
+            struct sockaddr_in ADDR;
+            ADDR.sin_family = AF_INET;
+            ADDR.sin_port = htons(9981);
+            inet_pton(AF_INET,"127.0.0.1",&ADDR.sin_addr);
+            if(::connect(socket_fd_,(SA *)&ADDR,sizeof(ADDR))<0)*/
+
+            if(::connect(socket_fd_,(SA *)addr.getSockAddrInet(),sizeof(struct sockaddr_in))<0)
+                ERR_EXIT("Socket::connect");
+            //::connect(socket_fd_,(SA *)addr.getSockAddrInet(),sizeof(struct sockaddr_in));
+
+        }
+
+        void sendMsg(std::string msg)
+        {
+            if((::send(socket_fd_,msg.c_str(),sizeof(msg.c_str()),0))<0)//send UNP1:P305
+                ERR_EXIT("Socket::send");
+        }
+        std::string recvMsg()
+        {
+            char buf[2048];
+            if((::recv(socket_fd_,buf,2048,0))<0)
+                ERR_EXIT("Socket::recvMsg");
+            //while(::recv(socket_fd_,buf,2048,0)<0);
+            return std::string(buf);
+        }
         /*
          *下面都是设置和获取套接字选项 内容太多，详见  UNP1:P151
          * setsockopt:设置套接字选项
@@ -87,6 +136,8 @@ namespace  ZDQ{
                 ERR_EXIT("setsockopt_TcpNoDelay");
         }
 
+        static int creatSockFd(const InetAddress & addr);
+        static void closeFd(int sockFd);
     private:
         const int socket_fd_;
     };
