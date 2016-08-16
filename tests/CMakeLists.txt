@@ -31,3 +31,9 @@ target_link_libraries(test_timer_queue zdq_utils)
 
 add_executable(test_eventloop_thread test_eventloop_thread.cpp)
 target_link_libraries(test_eventloop_thread zdq_utils)
+
+add_executable(test_acceptor_server test_acceptor_server.cpp)
+target_link_libraries(test_acceptor_server zdq_utils)
+
+add_executable(test_acceptor_client test_acceptor_client.cpp)
+target_link_libraries(test_acceptor_client zdq_utils)

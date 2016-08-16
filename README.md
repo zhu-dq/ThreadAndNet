@@ -19,6 +19,7 @@
 - 封装原子操作类AtomicIntegerT
 - 增加定时函数管理类TimerQueue
 - 增加one loop per thread类EventLoopThread
+- 增加接受connect类Acceptor
 - 其他正在coding中...
 
 ### 参考资料
