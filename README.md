@@ -20,6 +20,8 @@
 - 增加定时函数管理类TimerQueue
 - 增加one loop per thread类EventLoopThread
 - 增加接受connect类Acceptor
+- 增加TcpServer类
+- 增加TcpConnection类
 - 其他正在coding中...
 
 ### 参考资料

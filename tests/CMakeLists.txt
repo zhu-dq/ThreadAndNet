@@ -37,3 +37,6 @@ target_link_libraries(test_acceptor_server zdq_utils)
 
 add_executable(test_acceptor_client test_acceptor_client.cpp)
 target_link_libraries(test_acceptor_client zdq_utils)
+
+add_executable(test_TcpServerAndTcpConnection_server test_TcpServerAndTcpConnection_server.cpp)
+target_link_libraries(test_TcpServerAndTcpConnection_server zdq_utils)
