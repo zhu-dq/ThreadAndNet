@@ -1,7 +1,12 @@
-//
-// Created by zhudanqi on 16-8-16.
-//
-
+/*
+ * Acceptor类
+ * 作用：用于accept新TCP连接，并通过回调通知使用者.它是内部class，供TcpServer使用，生命周期由后者控制
+ * 设计思路: socket channel eventloop
+ *          1.socket 用于 bind listen accept
+ *          2.channel负责事件分发，做socket与accept之间的桥梁. Accept（sockfd <--> channel） --update()-->eventloop
+ *                                                            Accept响应<--channel做事件分发<--触发<--eventloop
+ * 作者:zhu-dq
+ */
 #ifndef ZDQ_ACCEPTOR_H
 #define ZDQ_ACCEPTOR_H
 
