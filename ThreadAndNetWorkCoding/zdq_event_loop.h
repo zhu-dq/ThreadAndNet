@@ -30,6 +30,7 @@ namespace ZDQ{
             ~EventLoop();
             void loop();//核心
             void updateChannel(Channel * c);//un_complite
+            void removeChannel(Channel* c);
             bool isInLoopThread();
             void quit();
             //update 1

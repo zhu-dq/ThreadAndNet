@@ -77,3 +77,16 @@ void ZDQ::Poller::updateChannel(Channel *c)
         }
     }
 }
+
+void ZDQ::Poller::removeChannel(Channel *c)
+{
+    assert(ownerLoop_->isInLoopThread());
+    int idx = c->getIndex();
+    channels_.erase(c->get_fd());//1. 从channels中删除
+    if(idx != pollfds_.size()-1)
+    {
+        std::swap(pollfds_[idx],pollfds_[pollfds_.size()-1]);
+        channels_[pollfds_[idx].fd]->setIndex(idx);
+    }
+    pollfds_.pop_back();//2. 从pollfds中删除
+}

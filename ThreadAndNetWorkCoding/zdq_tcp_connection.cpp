@@ -26,9 +26,38 @@ void ZDQ::TcpConnection::handleRead()
     char buf[65535];
     ssize_t n = ::read(channel_->get_fd(),buf, sizeof buf);
     string mesg;
-    for(int i = 0;i<n;++i)
-        mesg.push_back(buf[i]);
-    messageCallback_(shared_from_this(),mesg,ZDQ::Timestamp::now());
+    if(n>0)
+    {
+        for(int i = 0;i<n;++i)
+            mesg.push_back(buf[i]);
+        messageCallback_(shared_from_this(),mesg,ZDQ::Timestamp::now());
+    }else if(n == 0)
+    {
+        handleClose();
+    } else
+    {
+        handleError();
+    }
+
+}
+
+void ZDQ::TcpConnection::handleWrite()
+{
+
+}
+
+void ZDQ::TcpConnection::handleClose()
+{
+    assert(loop_->isInLoopThread());
+    setState(kDisconnected);
+    channel_->disableAll();
+    closeCallback_(shared_from_this());
+}
+
+void ZDQ::TcpConnection::handleError()
+{
+    int err = Socket::getSocketError(channel_->get_fd());
+    std::cout<<"TcpConnection::handleEror(): err : "<<err<<std::endl;
 }
 
 void ZDQ::TcpConnection::connectEstablished()
@@ -38,4 +67,16 @@ void ZDQ::TcpConnection::connectEstablished()
     setState(kConnected);
     channel_->enableReading();
     connCallback_(shared_from_this());
+}
+
+void ZDQ::TcpConnection::connectDestroyed()
+{
+    assert(loop_->isInLoopThread());
+    if(state_ == kConnected)
+    {
+        setState(kDisconnected);
+        channel_->disableAll();
+        connCallback_(shared_from_this());
+    }
+    loop_->removeChannel(channel_.get());
 }

@@ -10,6 +10,7 @@
 #define ZDQ_CHANNEL_H
 
 #include <functional>
+#include <cassert>
 #include "zdq_noncopyable.h"
 
 namespace ZDQ{
@@ -17,7 +18,11 @@ namespace ZDQ{
     class Channel{
     public:
         typedef std::function<void ()> EventCallback;
-        Channel(EventLoop* loop,int fd):loop_(loop),fd_(fd),events_(0),revents_(0),index_(-1){}
+        Channel(EventLoop* loop,int fd):loop_(loop),fd_(fd),events_(0),revents_(0),index_(-1),eventHandling_(false){}
+        ~Channel()
+        {
+            assert(!eventHandling_);
+        }
 
         void handleEvent();//核心，I/O事件分发
 
@@ -25,6 +30,7 @@ namespace ZDQ{
         void setReadCallback(const EventCallback & func ){readCallback_ = func;}
         void setWriteCallback(const EventCallback & func ){writeCallback_= func;}
         void setErrorCallback(const EventCallback & func ){errorCallback_ = func;}
+        void setCloseCallback(const EventCallback & func ){closeCallback_ = func;}
 
         //fd
         int get_fd()const { return fd_;}
@@ -37,7 +43,10 @@ namespace ZDQ{
             events_ |= KReadEvent; // 0 | 1 = 1 ; 1 | 1 = 1;
             update();
         }
+        bool isReading() const { return events_ & KReadEvent;};
+        void disableReading(){events_ &= ~KReadEvent;update();}
         void enableWriteing(){events_ |= KWriteEvent;update();}
+        bool isWriteing() const { return events_ & KReadEvent;}
         void disableWriteing()
         {
             events_ &= ~KWriteEvent;// A & 0 = 0
@@ -71,6 +80,9 @@ namespace ZDQ{
         EventCallback readCallback_;
         EventCallback writeCallback_;
         EventCallback errorCallback_;
+        EventCallback closeCallback_;
+
+        bool eventHandling_;
     };
 
 }

@@ -24,6 +24,7 @@ namespace ZDQ{
 
         ZDQ::Timestamp poll(int timeoutMs,ChannelList* activeChannels);//核心
         void updateChannel(Channel * c);
+        void removeChannel(Channel * c);
 
     private:
         void fillActiveChannels(int numEvents,ChannelList * activeChannels)const;

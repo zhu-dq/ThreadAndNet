@@ -1,5 +1,4 @@
 #include "zdq_event_loop.h"
-#include "zdq_channel.h"
 #include "zdq_poller.h"
 #include "zdq_timer.h"
 #include "zdq_time_queue.h"
@@ -60,6 +59,12 @@ void ZDQ::EventLoop::updateChannel(Channel *c)
     assert(c->ownerLoop()==this);
     assert(isInLoopThread());
     poller_->updateChannel(c);
+}
+void ZDQ::EventLoop::removeChannel(Channel *c)
+{
+    assert(c->ownerLoop()==this);
+    assert(isInLoopThread());
+    poller_->removeChannel(c);
 }
 void ZDQ::EventLoop::quit()
 {

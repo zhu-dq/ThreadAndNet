@@ -11,6 +11,8 @@
 #include <memory>
 #include <string>
 #include "zdq_buffer.h"
+//#include "zdq_event_loop.h"
+
 using namespace std;
 
 namespace ZDQ{
@@ -24,6 +26,7 @@ namespace ZDQ{
         typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
         typedef std::function<void (const TcpConnectionPtr&)> ConnCallback;
         typedef std::function<void (const TcpConnectionPtr&, string, Timestamp)> MessageCallback;
+        typedef std::function<void (const TcpConnectionPtr&)> CloseCallback;
         TcpConnection(EventLoop* loop,
                       const string& name,
                       int sockfd,
@@ -37,21 +40,32 @@ namespace ZDQ{
 
         void setMessageCallback(const MessageCallback& cb) { messageCallback_ = cb; }
 
+        void setCloseCallback(const CloseCallback& cb) {closeCallback_ = cb;}
+
         void setState(StateE s) { state_ = s; }
 
         bool connected() const { return state_ == kConnected; }
 
         const string& name() const { return name_; }
+        EventLoop * getLoop() const { return loop_; }
 
         const InetAddress& localAddress() const { return localAddr_; }
 
         const InetAddress& peerAddress() const { return peerAddr_; }
 
-        void connectEstablished();
+        void connectEstablished();//[开始]  第一次建立时调用
+
+        void connectDestroyed();//[结束]    TcpConnection被删除的时候调用
+
+
 
     private:
         StateE  state_;
+        //handleRead 检查read 返回值，根据返回值调用 messageCallback_ handleClose handleError等
         void handleRead();
+        void handleWrite();
+        void handleClose();
+        void handleError();
         EventLoop * loop_;
         std::string name_;
         std::unique_ptr<ZDQ::Socket> socket_;
@@ -60,6 +74,7 @@ namespace ZDQ{
         InetAddress peerAddr_;
         ConnCallback connCallback_;
         MessageCallback messageCallback_;
+        CloseCallback closeCallback_;
     };
 }
 

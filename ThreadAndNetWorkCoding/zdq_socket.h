@@ -137,6 +137,7 @@ namespace  ZDQ{
         }
 
         static int creatSockFd(const InetAddress & addr);
+        static int getSocketError(int sockfd);
         static void closeFd(int sockFd);
     private:
         const int socket_fd_;

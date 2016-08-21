@@ -12,9 +12,17 @@ const  int ZDQ::Channel::KWriteEvent = POLLOUT;
 
 void ZDQ::Channel::handleEvent()
 {
+    eventHandling_ = true;
+
     if(revents_ & POLLNVAL)
     {
         std::cout<<"Channel::handleEvent() POLLNVAL"<<std::endl;
+    }
+
+    if((revents_ & POLLHUP) && !(revents_ & POLLIN))
+    {
+        if(closeCallback_)
+            closeCallback_();
     }
 
     if(revents_ & (POLLERR | POLLNVAL))
@@ -34,6 +42,8 @@ void ZDQ::Channel::handleEvent()
         if(writeCallback_)
             writeCallback_();
     }
+
+    eventHandling_ = false;
 }
 
 void ZDQ::Channel::update()

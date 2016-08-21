@@ -35,6 +35,8 @@ void ZDQ::TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
     conns_[connName] = conn;
     conn->setConnectionCallback(connCallback_);
     conn->setMessageCallback(messageCallback_);
+    conn->setCloseCallback(
+            std::bind(&TcpServer::removeConnection,this,conn));
     conn->connectEstablished();
 }
 
@@ -44,4 +46,19 @@ void ZDQ::TcpServer::start()
     started_ = true;
     loop_->runInLoop(
             std::bind(&Acceptor::listen,acceptor_.get()));
+}
+
+void ZDQ::TcpServer::removeConnection(const TcpConnection::TcpConnectionPtr &conn)
+{
+    loop_->runInLoop(
+            std::bind(&TcpServer::removeConnectionInLoop,this,conn));
+}
+
+void ZDQ::TcpServer::removeConnectionInLoop(const TcpConnection::TcpConnectionPtr &conn)
+{
+    assert(loop_->isInLoopThread());
+    conns_.erase(conn->name());//1.删除TcpConnection
+    EventLoop * ioloop =  conn->getLoop();
+    ioloop->appendFuncInLoop(
+            std::bind(&TcpConnection::connectDestroyed,conn));//2.删除TcpConnecion中的channel
 }

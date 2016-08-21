@@ -23,6 +23,8 @@ namespace ZDQ{
         void start();
         void setConnectionCallback(const TcpConnection::ConnCallback & cb) {connCallback_=cb;}
         void setMessageCallback(const TcpConnection::MessageCallback & cb){messageCallback_=cb;}
+        void removeConnection(const TcpConnection::TcpConnectionPtr& conn);
+        void removeConnectionInLoop(const TcpConnection::TcpConnectionPtr& conn);
 
     private:
         void newConnection(int sockfd,const InetAddress & peerAddr);
