@@ -16,13 +16,15 @@ ZDQ::TcpConnection::TcpConnection(EventLoop *loop, const string &name, int sockf
                                                                peerAddr_(peerAddr),
                                                                state_(kConnecting)
 {
-    channel_->setReadCallback(bind(&ZDQ::TcpConnection::handleRead,this));
+    channel_->setReadCallback(bind(&ZDQ::TcpConnection::handleRead,this,std::placeholders::_1));
     //channel_->enableReading();
 }
 
 
-void ZDQ::TcpConnection::handleRead()
+void ZDQ::TcpConnection::handleRead(Timestamp now)
 {
+    assert(loop_->isInLoopThread());
+    /*
     char buf[65535];
     ssize_t n = ::read(channel_->get_fd(),buf, sizeof buf);
     string mesg;
@@ -31,7 +33,14 @@ void ZDQ::TcpConnection::handleRead()
         for(int i = 0;i<n;++i)
             mesg.push_back(buf[i]);
         messageCallback_(shared_from_this(),mesg,ZDQ::Timestamp::now());
-    }else if(n == 0)
+    }*/
+    int savedErrno = 0;
+    ssize_t n = inputBuf_.readFd(channel_->get_fd(), &savedErrno);
+    if (n > 0)
+    {
+        messageCallback_(shared_from_this(), &inputBuf_, now);
+    }
+    else if(n == 0)
     {
         handleClose();
     } else

@@ -46,9 +46,9 @@ void ZDQ::EventLoop::loop()
     while(!quit_)
     {
         activeChannels_.clear();
-        poller_->poll(kPollTimeMs,&activeChannels_);//10000->10s
+        Timestamp now = poller_->poll(kPollTimeMs,&activeChannels_);//10000->10s
         for(auto & elem : activeChannels_)
-            elem->handleEvent();
+            elem->handleEvent(now);
         doAppendFunctors();
     }
     std::cout<<"event loop stop looping"<<std::endl;

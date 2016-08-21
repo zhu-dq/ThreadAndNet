@@ -22,9 +22,15 @@ void onConnection(const ZDQ::TcpConnection::TcpConnectionPtr & conn)
 
 }
 
+/*
 void onMessage(const ZDQ::TcpConnection::TcpConnectionPtr & conn,string mesg,ZDQ::Timestamp now)
 {
     cout<<"received : "<<mesg<<" from "<<conn->name()<<endl;
+}*/
+
+void onMessage(const ZDQ::TcpConnection::TcpConnectionPtr & conn,ZDQ::Buffer * buf,ZDQ::Timestamp now)
+{
+    cout<<"received : "<<buf->retrieveAllAsString()<<" from "<<conn->name()<<endl;
 }
 
 int main()

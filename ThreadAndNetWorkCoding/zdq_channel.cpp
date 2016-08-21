@@ -10,7 +10,7 @@ const  int ZDQ::Channel::KNoneEvent = 0;
 const  int ZDQ::Channel::KReadEvent = POLLIN | POLLPRI;
 const  int ZDQ::Channel::KWriteEvent = POLLOUT;
 
-void ZDQ::Channel::handleEvent()
+void ZDQ::Channel::handleEvent(Timestamp receiveTime)
 {
     eventHandling_ = true;
 
@@ -34,7 +34,7 @@ void ZDQ::Channel::handleEvent()
     if(revents_ & (POLLIN | POLLPRI | POLLRDHUP))
     {
         if(readCallback_)
-            readCallback_();
+            readCallback_(receiveTime);
     }
 
     if(revents_ & POLLOUT)

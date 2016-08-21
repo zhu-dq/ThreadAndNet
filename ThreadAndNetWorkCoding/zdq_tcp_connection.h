@@ -25,7 +25,8 @@ namespace ZDQ{
         enum StateE { kDisconnected, kConnecting, kConnected, kDisconnecting };
         typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
         typedef std::function<void (const TcpConnectionPtr&)> ConnCallback;
-        typedef std::function<void (const TcpConnectionPtr&, string, Timestamp)> MessageCallback;
+        //typedef std::function<void (const TcpConnectionPtr&, string, Timestamp)> MessageCallback;
+        typedef std::function<void (const TcpConnectionPtr&, Buffer * buf, Timestamp)> MessageCallback;
         typedef std::function<void (const TcpConnectionPtr&)> CloseCallback;
         TcpConnection(EventLoop* loop,
                       const string& name,
@@ -62,7 +63,7 @@ namespace ZDQ{
     private:
         StateE  state_;
         //handleRead 检查read 返回值，根据返回值调用 messageCallback_ handleClose handleError等
-        void handleRead();
+        void handleRead(Timestamp);
         void handleWrite();
         void handleClose();
         void handleError();
@@ -75,6 +76,7 @@ namespace ZDQ{
         ConnCallback connCallback_;
         MessageCallback messageCallback_;
         CloseCallback closeCallback_;
+        Buffer inputBuf_;
     };
 }
 

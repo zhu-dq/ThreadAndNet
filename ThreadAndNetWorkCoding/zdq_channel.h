@@ -12,22 +12,25 @@
 #include <functional>
 #include <cassert>
 #include "zdq_noncopyable.h"
-
+#include "zdq_timestamp.h"
 namespace ZDQ{
     class EventLoop;
     class Channel{
     public:
         typedef std::function<void ()> EventCallback;
+        typedef std::function<void (Timestamp)> ReadEventCallback;
         Channel(EventLoop* loop,int fd):loop_(loop),fd_(fd),events_(0),revents_(0),index_(-1),eventHandling_(false){}
         ~Channel()
         {
             assert(!eventHandling_);
         }
 
-        void handleEvent();//核心，I/O事件分发
+        //void handleEvent();//核心，I/O事件分发
+        void handleEvent(Timestamp);//核心，I/O事件分发
 
         //callback
-        void setReadCallback(const EventCallback & func ){readCallback_ = func;}
+        //void setReadCallback(const EventCallback & func ){readCallback_ = func;}
+        void setReadCallback(const ReadEventCallback & func ){readCallback_ = func;}
         void setWriteCallback(const EventCallback & func ){writeCallback_= func;}
         void setErrorCallback(const EventCallback & func ){errorCallback_ = func;}
         void setCloseCallback(const EventCallback & func ){closeCallback_ = func;}
@@ -77,7 +80,8 @@ namespace ZDQ{
         int revents_;//目前活动的事件，由eventloop/poller设置
         int index_;//used by poller
 
-        EventCallback readCallback_;
+        //EventCallback readCallback_;
+        ReadEventCallback readCallback_;
         EventCallback writeCallback_;
         EventCallback errorCallback_;
         EventCallback closeCallback_;

@@ -88,6 +88,7 @@ namespace ZDQ{
             return retrieveAsString(readBuffSize());
         }
 
+        ssize_t readFd(int fd, int* savedErrno);
     private:
         std::vector<char> v_buff_;
         size_t readIndex_;
