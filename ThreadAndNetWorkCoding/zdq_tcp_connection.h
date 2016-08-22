@@ -58,6 +58,9 @@ namespace ZDQ{
 
         void connectDestroyed();//[结束]    TcpConnection被删除的时候调用
 
+        void send(const std::string & message); //A
+
+        void shutdown();  //B
 
 
     private:
@@ -67,6 +70,8 @@ namespace ZDQ{
         void handleWrite();
         void handleClose();
         void handleError();
+        void sendInLoop(const std::string& message);//A
+        void shutdownInLoop();//B
         EventLoop * loop_;
         std::string name_;
         std::unique_ptr<ZDQ::Socket> socket_;
@@ -77,6 +82,7 @@ namespace ZDQ{
         MessageCallback messageCallback_;
         CloseCallback closeCallback_;
         Buffer inputBuf_;
+        Buffer outputBuf_;
     };
 }
 

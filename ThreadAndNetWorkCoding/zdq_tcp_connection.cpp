@@ -52,7 +52,21 @@ void ZDQ::TcpConnection::handleRead(Timestamp now)
 
 void ZDQ::TcpConnection::handleWrite()
 {
-
+    assert(loop_->isInLoopThread());
+    if(channel_->isWriteing())
+    {
+        ssize_t n = ::write(channel_->get_fd(),outputBuf_.peek(),outputBuf_.readBuffSize());
+        if(n > 0)
+        {
+            outputBuf_.retrieve(n);
+            if(outputBuf_.readBuffSize() == 0)
+            {
+                channel_->disableWriteing();
+                if(state_ == kDisconnecting)
+                    shutdownInLoop();
+            }
+        }
+    }
 }
 
 void ZDQ::TcpConnection::handleClose()
@@ -88,4 +102,51 @@ void ZDQ::TcpConnection::connectDestroyed()
         connCallback_(shared_from_this());
     }
     loop_->removeChannel(channel_.get());
+}
+
+void ZDQ::TcpConnection::shutdown()
+{
+    if(state_ == kConnected)
+    {
+        setState(kDisconnecting);
+        loop_->runInLoop(
+                std::bind(&TcpConnection::shutdownInLoop,this));
+    }
+}
+
+void ZDQ::TcpConnection::shutdownInLoop()
+{
+    assert(loop_->isInLoopThread());
+    if(!channel_->isWriteing())
+        socket_->shutdownWrite();
+}
+
+void ZDQ::TcpConnection::send(const std::string &message)
+{
+    if(state_ == kConnected)
+    {
+        if(loop_->isInLoopThread())
+            sendInLoop(message);
+        else
+            loop_->runInLoop(std::bind(&TcpConnection::sendInLoop,this,message));
+    }
+}
+
+void ZDQ::TcpConnection::sendInLoop(const std::string &message)
+{
+    assert(loop_->isInLoopThread());
+    ssize_t  nwrite = 0;
+    if(!channel_->isWriteing() && outputBuf_.readBuffSize() == 0)
+    {
+        nwrite = ::write(channel_->get_fd(),message.data(),message.size());
+        if(nwrite == -1)
+            ERR_EXIT("ZDQ::TcpConnection::sendInLoop::write");
+    }
+
+    if(nwrite < message.size())
+    {
+        outputBuf_.append(message.data()+nwrite,message.size()-nwrite);
+        if(!channel_->isWriteing())
+            channel_->enableWriteing();
+    }
 }

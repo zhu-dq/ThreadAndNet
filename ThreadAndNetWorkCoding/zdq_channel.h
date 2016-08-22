@@ -49,7 +49,7 @@ namespace ZDQ{
         bool isReading() const { return events_ & KReadEvent;};
         void disableReading(){events_ &= ~KReadEvent;update();}
         void enableWriteing(){events_ |= KWriteEvent;update();}
-        bool isWriteing() const { return events_ & KReadEvent;}
+        bool isWriteing() const { return events_ & KWriteEvent;}
         void disableWriteing()
         {
             events_ &= ~KWriteEvent;// A & 0 = 0
