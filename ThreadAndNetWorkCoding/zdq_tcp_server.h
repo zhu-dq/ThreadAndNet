@@ -14,7 +14,10 @@
 #include "zdq_tcp_connection.h"
 
 namespace ZDQ{
+
     class EventLoop;
+    class EventLoopThreadPool;
+
     class TcpServer:public ZDQ::NonCopyable{
     public:
         TcpServer(EventLoop * loop,const InetAddress & listenAddr,string name = "socket");
@@ -26,6 +29,7 @@ namespace ZDQ{
         void setWriteCompleteCallback(const TcpConnection::WriteCompleteCallback& cb) { writeCompleteCallback_ = cb; }
         void removeConnection(const TcpConnection::TcpConnectionPtr& conn);
         void removeConnectionInLoop(const TcpConnection::TcpConnectionPtr& conn);
+        void setThreadNum(int numThreads);
 
     private:
         void newConnection(int sockfd,const InetAddress & peerAddr);
@@ -39,6 +43,7 @@ namespace ZDQ{
         bool started_;
         int nextConnTd_;
         ConnMap conns_;
+        std::shared_ptr<EventLoopThreadPool> threadPool_;
     };
 
 }

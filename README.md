@@ -22,6 +22,7 @@
 - 增加接受connect类Acceptor
 - 增加TcpServer类
 - 增加TcpConnection类
+- 增加EventLoopThreadLoop类
 - 其他正在coding中...
 
 ### 参考资料
