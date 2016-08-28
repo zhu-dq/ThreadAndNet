@@ -37,7 +37,9 @@ void ZDQ::TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
     conn->setMessageCallback(messageCallback_);
     conn->setCloseCallback(
             std::bind(&TcpServer::removeConnection,this,conn));
-    conn->connectEstablished();
+    conn->setWriteCompleteCallback(writeCompleteCallback_);
+    //conn->connectEstablished();
+    loop_->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
 }
 
 void ZDQ::TcpServer::start()

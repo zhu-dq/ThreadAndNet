@@ -27,6 +27,7 @@ namespace ZDQ{
         typedef std::function<void (const TcpConnectionPtr&)> ConnCallback;
         //typedef std::function<void (const TcpConnectionPtr&, string, Timestamp)> MessageCallback;
         typedef std::function<void (const TcpConnectionPtr&, Buffer * buf, Timestamp)> MessageCallback;
+        typedef std::function<void (const TcpConnectionPtr&)> WriteCompleteCallback;
         typedef std::function<void (const TcpConnectionPtr&)> CloseCallback;
         TcpConnection(EventLoop* loop,
                       const string& name,
@@ -42,6 +43,8 @@ namespace ZDQ{
         void setMessageCallback(const MessageCallback& cb) { messageCallback_ = cb; }
 
         void setCloseCallback(const CloseCallback& cb) {closeCallback_ = cb;}
+
+        void setWriteCompleteCallback(const WriteCompleteCallback& cb) { writeCompleteCallback_ = cb; }
 
         void setState(StateE s) { state_ = s; }
 
@@ -81,6 +84,7 @@ namespace ZDQ{
         ConnCallback connCallback_;
         MessageCallback messageCallback_;
         CloseCallback closeCallback_;
+        WriteCompleteCallback writeCompleteCallback_;
         Buffer inputBuf_;
         Buffer outputBuf_;
     };

@@ -23,6 +23,7 @@ namespace ZDQ{
         void start();
         void setConnectionCallback(const TcpConnection::ConnCallback & cb) {connCallback_=cb;}
         void setMessageCallback(const TcpConnection::MessageCallback & cb){messageCallback_=cb;}
+        void setWriteCompleteCallback(const TcpConnection::WriteCompleteCallback& cb) { writeCompleteCallback_ = cb; }
         void removeConnection(const TcpConnection::TcpConnectionPtr& conn);
         void removeConnectionInLoop(const TcpConnection::TcpConnectionPtr& conn);
 
@@ -33,6 +34,7 @@ namespace ZDQ{
         unique_ptr<Acceptor> acceptor_;
         TcpConnection::ConnCallback connCallback_;
         TcpConnection::MessageCallback messageCallback_;
+        TcpConnection::WriteCompleteCallback writeCompleteCallback_;
         const string name_;
         bool started_;
         int nextConnTd_;

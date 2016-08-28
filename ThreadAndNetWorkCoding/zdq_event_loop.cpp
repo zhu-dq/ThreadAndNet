@@ -1,7 +1,31 @@
+#include <csignal>
 #include "zdq_event_loop.h"
 #include "zdq_poller.h"
 #include "zdq_timer.h"
 #include "zdq_time_queue.h"
+
+/*
+ *  忽略SIGPIPE
+ *  匿名命名空间作用:
+ *          匿名namespace直接在文件里面不加修饰的访问就OK了，但是超出这个文件就不行了
+ *          其实也就是起到原来的static的作用而以
+ */
+
+namespace
+{
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+    class IgnoreSigPipe
+    {
+    public:
+        IgnoreSigPipe()
+        {
+            ::signal(SIGPIPE, SIG_IGN);//忽略SIGPIPE
+        }
+    };
+#pragma GCC diagnostic error "-Wold-style-cast"
+    IgnoreSigPipe initObj;
+}
+
 __thread ZDQ::EventLoop * t_loopInThisThread = 0; //__thread 保证单线程内的全局变量，其他线程不可访问
 const int kPollTimeMs = 10000;
 ZDQ::EventLoop::EventLoop()

@@ -62,6 +62,11 @@ void ZDQ::TcpConnection::handleWrite()
             if(outputBuf_.readBuffSize() == 0)
             {
                 channel_->disableWriteing();
+                if(writeCompleteCallback_)
+                {
+                    loop_->appendFuncInLoop(
+                            std::bind(writeCompleteCallback_,shared_from_this()));
+                }
                 if(state_ == kDisconnecting)
                     shutdownInLoop();
             }
@@ -143,10 +148,14 @@ void ZDQ::TcpConnection::sendInLoop(const std::string &message)
             ERR_EXIT("ZDQ::TcpConnection::sendInLoop::write");
     }
 
-    if(nwrite < message.size())
+    if(nwrite < message.size())//表明没有write完,暂时存起来
     {
         outputBuf_.append(message.data()+nwrite,message.size()-nwrite);
         if(!channel_->isWriteing())
             channel_->enableWriteing();
+    } else if(writeCompleteCallback_)//调用写完成事件
+    {
+        loop_->appendFuncInLoop(
+                std::bind(writeCompleteCallback_,shared_from_this()));
     }
 }
