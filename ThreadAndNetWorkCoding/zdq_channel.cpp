@@ -50,3 +50,9 @@ void ZDQ::Channel::update()
 {
     loop_->updateChannel(this);
 }
+
+void ZDQ::Channel::remove()
+{
+    assert(isNoneEvent());
+    loop_->removeChannel(this);
+}

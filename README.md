@@ -23,6 +23,7 @@
 - 增加TcpServer类
 - 增加TcpConnection类
 - 增加EventLoopThreadLoop类
+- 增加Connector类
 - 其他正在coding中...
 
 ### 参考资料

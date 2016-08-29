@@ -87,6 +87,7 @@ namespace ZDQ{
 
         static InetAddress getLocalInetAddress(int); //封装getsockname,获取与某个套接字关联的本地协议地址
         static InetAddress getPeerInetAddress(int);//封装getpeername,获取与某个套接字关联的外地地协议地址
+        static bool isSelfConnect(int sockfd);
     private:
         struct sockaddr_in sock_addr_;//结构详见UNP1:P57
     };
@@ -107,6 +108,14 @@ namespace ZDQ{
         if(::getpeername(sockfd,(SA*)&addr,&len)==-1)
             ERR_EXIT("getpeername");
         return  InetAddress(addr);
+    }
+
+    inline bool InetAddress::isSelfConnect(int sockfd)
+    {
+        InetAddress localAddr = InetAddress::getLocalInetAddress(sockfd);
+        InetAddress peerAddr = InetAddress::getPeerInetAddress(sockfd);
+        return (localAddr.getIpAsString() == peerAddr.getIpAsString()  &&
+                      localAddr.getPort() == peerAddr.getPort());
     }
 }
 

@@ -44,3 +44,6 @@ target_link_libraries(test_TcpServerAndTcpConnection_server zdq_utils)
 add_executable(test_eventloop_threadpool test_eventloop_threadpool.cpp)
 target_link_libraries(test_eventloop_threadpool zdq_utils)
 
+add_executable(test_Connector test_Connector.cpp)
+target_link_libraries(test_Connector zdq_utils)
+

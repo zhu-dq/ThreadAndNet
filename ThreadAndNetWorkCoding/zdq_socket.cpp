@@ -37,3 +37,16 @@ int ZDQ::Socket::getSocketError(int sockfd)
     else
         return optval;
 }
+
+int ZDQ::Socket::createNonblockingOrDie(const InetAddress &addr)
+{
+    return ::socket(
+            addr.getSockAddrInet()->sin_family,
+            SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
+            IPPROTO_TCP);//参数信息，详见UNP1 P79
+}
+
+int ZDQ::Socket::connectFdAndAddr(int sockfd,const InetAddress &addr)
+{
+    return ::connect(sockfd,(SA *)addr.getSockAddrInet(),sizeof(struct sockaddr_in));
+}

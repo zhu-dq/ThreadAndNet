@@ -74,7 +74,8 @@ namespace  ZDQ{
                 ERR_EXIT("shutdow");
         }
 
-        void Connect(InetAddress addr)
+        //void Connect(InetAddress addr)
+        int Connect(InetAddress addr)
         {
             /*
             struct sockaddr_in ADDR;
@@ -83,10 +84,11 @@ namespace  ZDQ{
             inet_pton(AF_INET,"127.0.0.1",&ADDR.sin_addr);
             if(::connect(socket_fd_,(SA *)&ADDR,sizeof(ADDR))<0)*/
 
-            if(::connect(socket_fd_,(SA *)addr.getSockAddrInet(),sizeof(struct sockaddr_in))<0)
-                ERR_EXIT("Socket::connect");
+            /*if(::connect(socket_fd_,(SA *)addr.getSockAddrInet(),sizeof(struct sockaddr_in))<0)
+                ERR_EXIT("Socket::connect");*/
             //::connect(socket_fd_,(SA *)addr.getSockAddrInet(),sizeof(struct sockaddr_in));
 
+            return ::connect(socket_fd_,(SA *)addr.getSockAddrInet(),sizeof(struct sockaddr_in));
         }
 
         void sendMsg(std::string msg)
@@ -137,6 +139,8 @@ namespace  ZDQ{
         }
 
         static int creatSockFd(const InetAddress & addr);
+        static int createNonblockingOrDie(const InetAddress &addr);
+        static int  connectFdAndAddr(int sockfd,const InetAddress &addr);
         static int getSocketError(int sockfd);
         static void closeFd(int sockFd);
     private:

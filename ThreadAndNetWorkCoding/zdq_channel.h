@@ -65,6 +65,7 @@ namespace ZDQ{
         void setIndex(int index){index_ = index;}
 
         EventLoop* ownerLoop()const { return loop_;}
+        void remove();
 
 
 
