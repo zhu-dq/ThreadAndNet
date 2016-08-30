@@ -13,7 +13,7 @@ using namespace std;
 
 EventLoop * g_loop;
 
-void timeout()
+void timeout(Timestamp time)
 {
     cout<<"timeout !"<<endl;
     g_loop->quit();
