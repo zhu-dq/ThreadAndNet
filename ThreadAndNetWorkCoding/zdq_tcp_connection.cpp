@@ -159,3 +159,19 @@ void ZDQ::TcpConnection::sendInLoop(const std::string &message)
                 std::bind(writeCompleteCallback_,shared_from_this()));
     }
 }
+
+void ZDQ::TcpConnection::forceClose()
+{
+    if (state_ == kConnected || state_ == kDisconnecting)
+    {
+        setState(kDisconnecting);
+        loop_->appendFuncInLoop(std::bind(&TcpConnection::forceCloseInLoop, shared_from_this()));
+    }
+}
+
+void ZDQ::TcpConnection::forceCloseInLoop()
+{
+    assert(loop_->isInLoopThread());
+    if (state_ == kConnected || state_ == kDisconnecting)
+        handleClose();
+}

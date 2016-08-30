@@ -24,7 +24,8 @@
 - 增加TcpConnection类
 - 增加EventLoopThreadLoop类
 - 增加Connector类
-- 其他正在coding中...
+- 添加TcpClient类
+============
 
 ### 参考资料
 - 《UNIX网络编程》

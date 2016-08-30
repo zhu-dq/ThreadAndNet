@@ -65,6 +65,7 @@ namespace ZDQ{
 
         void shutdown();  //B
 
+        void forceClose();
 
     private:
         StateE  state_;
@@ -75,6 +76,7 @@ namespace ZDQ{
         void handleError();
         void sendInLoop(const std::string& message);//A
         void shutdownInLoop();//B
+        void forceCloseInLoop();
         EventLoop * loop_;
         std::string name_;
         std::unique_ptr<ZDQ::Socket> socket_;
