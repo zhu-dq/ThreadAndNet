@@ -24,8 +24,12 @@
 - 增加TcpConnection类
 - 增加EventLoopThreadLoop类
 - 增加Connector类
-- 添加TcpClient类
-- =============
+- 增加TcpClient类
+- =========================
+- || 基本完成muduo网络库的仿写||
+- =========================
+- 增加 echo demo
+ - 待增加：http server
 
 ### 参考资料
 - 《UNIX网络编程》
