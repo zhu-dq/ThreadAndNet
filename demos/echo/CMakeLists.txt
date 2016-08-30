@@ -1,0 +1,6 @@
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
+set(CMAKE_BUILD_TYPE Debug)
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin/demos")
+include_directories(${PROJECT_SOURCE_DIR}/ThreadAndNetWorkCoding)
+add_executable(echo_server  echo_server.cpp)
+target_link_libraries(echo_server zdq_utils)

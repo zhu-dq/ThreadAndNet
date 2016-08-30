@@ -1,6 +1,6 @@
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 set(CMAKE_BUILD_TYPE Debug)
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin/tests")
 include_directories(${PROJECT_SOURCE_DIR}/ThreadAndNetWorkCoding)
 add_executable(test_base  test_base.cpp)
 target_link_libraries(test_base zdq_utils)
